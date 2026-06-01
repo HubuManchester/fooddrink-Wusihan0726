@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodDrinkApp.AddJournalPage"
+             Title="Write Diary">
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="{AppThemeBinding Light=#FDE8E8, Dark=#1A1A1A}" Offset="0.0" />
+            <GradientStop Color="{AppThemeBinding Light=#F5F5F0, Dark=#1A1A1A}" Offset="0.5" />
+            <GradientStop Color="{AppThemeBinding Light=#E8F0E8, Dark=#0F0F0F}" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="22" Spacing="16">
+            <Border StrokeThickness="0" Padding="18" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="6">
+                    <Label Text="Write New Entry"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#FFFFFF}"
+                           SemanticProperties.HeadingLevel="Level1" />
+                    <Label Grid.Row="1"
+                           Text="Record your meal with photo, location, and notes."
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
+                </Grid>
+            </Border>
+
+            <!-- Photo Section -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Meal Photo"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
+                            HeightRequest="200">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Image x:Name="PhotoPreview"
+                               Aspect="AspectFill"
+                               SemanticProperties.Description="Meal photo preview">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnTakePhotoClicked" />
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </Border>
+
+                    <Button Text="Take Photo"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="#FFFFFF"
+                            Clicked="OnTakePhotoClicked"
+                            SemanticProperties.Hint="Take a photo of your meal" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Meal Type Section -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Meal Type"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Secondary}" />
+
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                        <Button x:Name="BreakfastButton"
+                                Text="Breakfast"
+                                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}"
+                                TextColor="{StaticResource Primary}"
+                                CornerRadius="20"
+                                Clicked="OnMealTypeClicked" />
+                        <Button x:Name="LunchButton"
+                                Text="Lunch"
+                                BackgroundColor="{StaticResource Primary}"
+                                TextColor="#FFFFFF"
+                                CornerRadius="20"
+                                Clicked="OnMealTypeClicked" />
+                        <Button x:Name="DinnerButton"
+                                Text="Dinner"
+                                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}"
+                                TextColor="{StaticResource Primary}"
+                                CornerRadius="20"
+                                Clicked="OnMealTypeClicked" />
+                        <Button x:Name="SnackButton"
+                                Text="Snack"
+                                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}"
+                                TextColor="{StaticResource Primary}"
+                                CornerRadius="20"
+                                Clicked="OnMealTypeClicked" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Location Section -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Location"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+
+                    <Label x:Name="LocationLabel"
+                           Text="Not captured yet"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
+
+                    <Label x:Name="CoordinateLabel"
+                           Text=""
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#B0A0A0, Dark=#808080}"
+                           IsVisible="False" />
+
+                    <Button Text="Get Current Location"
+                            BackgroundColor="{StaticResource Secondary}"
+                            TextColor="#FFFFFF"
+                            Clicked="OnGetLocationClicked"
+                            SemanticProperties.Hint="Get your current location" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Notes Section -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Notes"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Secondary}" />
+
+                    <Editor x:Name="NotesEditor"
+                            Placeholder="What did you eat? How was it?"
+                            AutoSize="TextChanges"
+                            HeightRequest="120"
+                            TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#C0C0C0}"
+                            BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Text="Save to Diary"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="#FFFFFF"
+                        Clicked="OnSaveClicked"
+                        SemanticProperties.Hint="Save this journal entry" />
+                <Button Grid.Column="1"
+                        Text="Read Aloud"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                        BorderColor="{StaticResource Secondary}"
+                        BorderWidth="1"
+                        TextColor="{StaticResource Secondary}"
+                        Clicked="OnReadAloudClicked"
+                        SemanticProperties.Hint="Read the notes aloud" />
+            </Grid>
+
+            <!-- Status Label -->
+            <Label x:Name="StatusLabel"
+                   Text="Ready"
+                   FontSize="13"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Primary}"
+                   HorizontalOptions="Center"
+                   Margin="0,10,0,20" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

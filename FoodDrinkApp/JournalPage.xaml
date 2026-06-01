@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:FoodDrinkApp.Models"
+             x:Class="FoodDrinkApp.JournalPage"
+             Title="Journal">
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="{AppThemeBinding Light=#FDE8E8, Dark=#1A1A1A}" Offset="0.0" />
+            <GradientStop Color="{AppThemeBinding Light=#F5F5F0, Dark=#1A1A1A}" Offset="0.5" />
+            <GradientStop Color="{AppThemeBinding Light=#E8F0E8, Dark=#0F0F0F}" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="20,18,20,18">
+            <Border StrokeThickness="0" Padding="18" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#20000000" Offset="0,2" Radius="8" />
+                </Border.Shadow>
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="6">
+                    <Label Text="Meal Journal"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#FFFFFF}"
+                           SemanticProperties.HeadingLevel="Level1" />
+                    <Label Grid.Row="1"
+                           Text="Capture your meals with photos, locations, and notes."
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <RefreshView Grid.Row="1" x:Name="JournalRefreshView" Refreshing="OnRefreshing">
+            <CollectionView x:Name="JournalCollection"
+                            SelectionMode="None"
+                            EmptyView="No journal entries yet. Tap + to write your first meal diary."
+                            Margin="16,0,16,18">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:JournalEntry">
+                        <Border StrokeThickness="0"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#22000000" Offset="0,4" Radius="12" Opacity="0.34" />
+                            </Border.Shadow>
+                            <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+                                <!-- Header: Date and Meal Type -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <Label Text="{Binding DisplayTitle}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Primary}" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding DisplayTime}"
+                                           FontSize="13"
+                                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
+                                </Grid>
+
+                                <!-- Location -->
+                                <Label Grid.Row="1"
+                                       Text="{Binding LocationAddress, StringFormat='Location: {0}'}"
+                                       FontSize="13"
+                                       TextColor="{StaticResource Secondary}"
+                                       IsVisible="{Binding LocationAddress, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                                       LineBreakMode="TailTruncation" />
+
+                                <!-- Notes Preview -->
+                                <Label Grid.Row="2"
+                                       Text="{Binding Notes}"
+                                       FontSize="14"
+                                       TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#C0C0C0}"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2" />
+
+                                <!-- Footer: Photo indicator and View button -->
+                                <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,4,0,0">
+                                    <Label Grid.Column="0"
+                                           Text="Has photo"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Primary}"
+                                           IsVisible="{Binding HasPhoto}" />
+                                    <Button Grid.Column="1"
+                                            Text="View"
+                                            Padding="16,8"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            TextColor="#FFFFFF"
+                                            FontSize="12"
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnViewClicked"
+                                            SemanticProperties.Hint="View journal entry details" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Floating Action Button -->
+        <Grid Grid.Row="1" VerticalOptions="End" HorizontalOptions="End" Margin="0,0,20,20">
+            <Border WidthRequest="56"
+                    HeightRequest="56"
+                    StrokeThickness="0"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#81C784" Offset="0.0" />
+                        <GradientStop Color="#E8B4B4" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="28" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#33000000" Offset="0,4" Radius="12" Opacity="0.45" />
+                </Border.Shadow>
+                <Button Text="+"
+                        FontSize="28"
+                        FontAttributes="Bold"
+                        TextColor="#FFFFFF"
+                        BackgroundColor="Transparent"
+                        Padding="0"
+                        Clicked="OnAddClicked"
+                        SemanticProperties.Hint="Add a new journal entry" />
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>
