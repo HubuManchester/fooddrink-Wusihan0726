@@ -135,6 +135,74 @@ public static class FoodCatalogService
         return item;
     }
 
+    public static async Task<bool> UpdateAsync(FoodItem item)
+    {
+        if (MockApiConfig.IsConfigured)
+        {
+            try
+            {
+                var response = await HttpClient.PutAsJsonAsync(
+                    $"{MockApiConfig.EndpointUrl.TrimEnd('/')}/{Uri.EscapeDataString(item.Id)}",
+                    item,
+                    JsonOptions);
+                response.EnsureSuccessStatusCode();
+
+                var index = cachedItems.FindIndex(i => i.Id == item.Id);
+                if (index >= 0)
+                {
+                    cachedItems[index] = item;
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        var localIndex = cachedItems.FindIndex(i => i.Id == item.Id);
+        if (localIndex >= 0)
+        {
+            cachedItems[localIndex] = item;
+            return true;
+        }
+
+        return false;
+    }
+
+    public static async Task<bool> DeleteAsync(string id)
+    {
+        if (MockApiConfig.IsConfigured)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync(
+                    $"{MockApiConfig.EndpointUrl.TrimEnd('/')}/{Uri.EscapeDataString(id)}");
+                response.EnsureSuccessStatusCode();
+
+                var item = cachedItems.FirstOrDefault(i => i.Id == id);
+                if (item is not null)
+                {
+                    cachedItems.Remove(item);
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        var localItem = cachedItems.FirstOrDefault(i => i.Id == id);
+        if (localItem is not null)
+        {
+            cachedItems.Remove(localItem);
+            return true;
+        }
+
+        return false;
+    }
+
     private static async Task<IReadOnlyList<FoodItem>> GetAllAsync()
     {
         if (!MockApiConfig.IsConfigured)

@@ -38,7 +38,7 @@ public sealed class FoodItem
     public string CaloriesLabel => $"{Calories} kcal";
 
     [JsonIgnore]
-    public string MacroSummary => $"Protein {Protein}g, carbs {Carbs}g, fat {Fat}g";
+    public string MacroSummary => $"Protein {Protein}g, Carbs {Carbs}g, Fat {Fat}g";
 
     [JsonIgnore]
     public string AccessibleSummary => $"{Name}. {Category}. {Calories} kcal. {MacroSummary}. {AllergyNote}";

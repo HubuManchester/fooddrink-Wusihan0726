@@ -1,3 +1,4 @@
+using FoodDrinkApp.Models;
 using FoodDrinkApp.Services;
 
 namespace FoodDrinkApp;
@@ -34,6 +35,46 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async void OnEditClicked(object? sender, EventArgs e)
+    {
+        if (sender is Button button && button.CommandParameter is string id)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "id", id }
+            };
+            await Shell.Current.GoToAsync($"{nameof(EditFoodPage)}", parameters);
+        }
+    }
+
+    private async void OnDeleteClicked(object? sender, EventArgs e)
+    {
+        if (sender is Button button && button.CommandParameter is string id)
+        {
+            var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this item?", "Yes", "No");
+            if (!confirm) return;
+
+            try
+            {
+                var success = await FoodCatalogService.DeleteAsync(id);
+                if (success)
+                {
+                    HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
+                    await LoadFoodItemsAsync(SearchFoodBar.Text);
+                    SemanticScreenReader.Announce("Item deleted");
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Failed to delete item", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", ex.Message, "OK");
+            }
+        }
+    }
+
     private async void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
     {
         await LoadFoodItemsAsync(e.NewTextValue);
@@ -49,6 +90,6 @@ public partial class MainPage : ContentPage
         await LoadFoodItemsAsync(SearchFoodBar.Text);
         FoodRefreshView.IsRefreshing = false;
         var source = FoodCatalogService.LastLoadUsedMockApi ? "mockapi.io" : "local fallback data";
-        SemanticScreenReader.Announce($"Food and drink list refreshed. Current source: {source}.");
+        SemanticScreenReader.Announce($"Food list refreshed. Source: {source}");
     }
 }

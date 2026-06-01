@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FoodDrinkApp.EditFoodPage"
+             Title="Edit Food">
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="{AppThemeBinding Light=#FDE8E8, Dark=#1A1A1A}" Offset="0.0" />
+            <GradientStop Color="{AppThemeBinding Light=#F5F5F0, Dark=#1A1A1A}" Offset="0.5" />
+            <GradientStop Color="{AppThemeBinding Light=#E8F0E8, Dark=#0F0F0F}" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="22" Spacing="16">
+            <Border StrokeThickness="0" Padding="18" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="6">
+                    <Label Text="Edit Food Item"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#FFFFFF}"
+                           SemanticProperties.HeadingLevel="Level1" />
+                    <Label Grid.Row="1"
+                           Text="Update the details of this food or drink"
+                           FontSize="15"
+                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
+                </Grid>
+            </Border>
+
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Basic Information" 
+                           FontSize="16" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource Primary}" />
+                    <Entry x:Name="NameEntry"
+                           Placeholder="Name"
+                           SemanticProperties.Hint="Required food or drink name" />
+                    <Picker x:Name="CategoryPicker"
+                            Title="Category"
+                            SemanticProperties.Hint="Required category">
+                        <Picker.Items>
+                            <x:String>Breakfast</x:String>
+                            <x:String>Lunch</x:String>
+                            <x:String>Dinner</x:String>
+                            <x:String>Snack</x:String>
+                            <x:String>Drink</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Editor x:Name="DescriptionEditor"
+                            Placeholder="Description, ingredients, flavour, or context"
+                            AutoSize="TextChanges"
+                            HeightRequest="104"
+                            SemanticProperties.Hint="Describe this food or drink" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Nutrition Data" 
+                           FontSize="16" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource Secondary}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Entry x:Name="CaloriesEntry"
+                               Placeholder="Calories"
+                               Keyboard="Numeric"
+                               SemanticProperties.Hint="Required calories as a number" />
+                        <Entry x:Name="ProteinEntry"
+                               Grid.Column="1"
+                               Placeholder="Protein (g)"
+                               Keyboard="Numeric" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Entry x:Name="CarbsEntry"
+                               Placeholder="Carbs (g)"
+                               Keyboard="Numeric" />
+                        <Entry x:Name="FatEntry"
+                               Grid.Column="1"
+                               Placeholder="Fat (g)"
+                               Keyboard="Numeric" />
+                    </Grid>
+                    <Entry x:Name="AllergyEntry"
+                           Placeholder="Allergy note or dietary restriction"
+                           SemanticProperties.Hint="Enter allergy or dietary information" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border x:Name="ValidationPanel"
+                    IsVisible="False"
+                    StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
+                    Padding="14">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Label x:Name="ValidationLabel"
+                       TextColor="{StaticResource Secondary}"
+                       FontAttributes="Bold" />
+            </Border>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Text="Save Changes"
+                        FontAttributes="Bold"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="#FFFFFF"
+                        Clicked="OnSaveClicked"
+                        SemanticProperties.Hint="Save changes to this record" />
+                <Button Text="Cancel"
+                        FontAttributes="Bold"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                        BorderColor="{StaticResource Secondary}"
+                        BorderWidth="1"
+                        TextColor="{StaticResource Secondary}"
+                        Clicked="OnCancelClicked"
+                        SemanticProperties.Hint="Cancel editing" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

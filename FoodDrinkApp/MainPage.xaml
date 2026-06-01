@@ -90,7 +90,7 @@
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="6,*">
                                 <BoxView BackgroundColor="{StaticResource Primary}" />
-                                <Grid Grid.Column="1" Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6" ColumnSpacing="10">
+                                <Grid Grid.Column="1" Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,*,*" RowSpacing="6" ColumnSpacing="8">
                                     <Label Text="{Binding Name}"
                                            FontSize="18"
                                            FontAttributes="Bold"
@@ -110,32 +110,46 @@
                                                TextColor="{StaticResource Secondary}" />
                                     </Border>
                                     <Label Grid.Row="1"
-                                           Grid.ColumnSpan="2"
+                                           Grid.ColumnSpan="4"
                                            Text="{Binding Description}"
                                            FontSize="13"
                                            TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2" />
                                     <Label Grid.Row="2"
-                                           Grid.ColumnSpan="2"
+                                           Grid.ColumnSpan="4"
                                            Text="{Binding MacroSummary}"
                                            FontSize="12"
                                            TextColor="{StaticResource Primary}" />
-                                    <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,4,0,0">
-                                        <Label Text="{Binding Category}"
-                                               FontSize="12"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource Secondary}" />
-                                        <Button Grid.Column="1"
-                                                Text="View"
-                                                Padding="12,6"
-                                                BackgroundColor="{StaticResource Primary}"
-                                                TextColor="#FFFFFF"
-                                                FontSize="12"
-                                                CommandParameter="{Binding Id}"
-                                                Clicked="OnDetailsClicked"
-                                                SemanticProperties.Hint="View nutrition details" />
-                                    </Grid>
+                                    <Label Grid.Row="3"
+                                           Grid.Column="0"
+                                           Text="{Binding Category}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Secondary}"
+                                           VerticalOptions="Center" />
+                                    <Button Grid.Row="3"
+                                            Grid.Column="2"
+                                            Text="Edit"
+                                            Padding="12,6"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            TextColor="#FFFFFF"
+                                            FontSize="12"
+                                            CornerRadius="8"
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnEditClicked"
+                                            SemanticProperties.Hint="Edit this food item" />
+                                    <Button Grid.Row="3"
+                                            Grid.Column="3"
+                                            Text="Delete"
+                                            Padding="12,6"
+                                            BackgroundColor="{StaticResource Secondary}"
+                                            TextColor="#FFFFFF"
+                                            FontSize="12"
+                                            CornerRadius="8"
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnDeleteClicked"
+                                            SemanticProperties.Hint="Delete this food item" />
                                 </Grid>
                             </Grid>
                         </Border>

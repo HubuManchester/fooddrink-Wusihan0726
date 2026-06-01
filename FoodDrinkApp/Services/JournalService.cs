@@ -102,7 +102,10 @@ public static class JournalService
             {
                 try
                 {
-                    File.Delete(entry.PhotoPath);
+                    if (File.Exists(entry.PhotoPath))
+                    {
+                        File.Delete(entry.PhotoPath);
+                    }
                 }
                 catch
                 {

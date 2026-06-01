@@ -71,6 +71,9 @@
 		<MauiXaml Update="AddJournalPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="EditFoodPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="FoodDetailPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
