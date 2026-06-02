@@ -9,9 +9,7 @@ public partial class SettingsPage : ContentPage
         InitializeComponent();
 
         ThemePicker.SelectedIndex = 0;
-        LargeTextSwitch.IsToggled = AccessibilityService.LargeTextEnabled;
 
-        // Load username
         string savedUsername = Preferences.Get("UserName", "NutriBite User");
         UserNameLabel.Text = savedUsername;
     }
@@ -19,6 +17,7 @@ public partial class SettingsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
         LargeTextSwitch.IsToggled = AccessibilityService.LargeTextEnabled;
         ApplyLargeTextState();
     }
@@ -48,22 +47,60 @@ public partial class SettingsPage : ContentPage
         Announce("Theme updated");
     }
 
-    private void OnLargeTextToggled(object? sender, ToggledEventArgs e)
+    private async void OnLargeTextToggled(object? sender, ToggledEventArgs e)
     {
         AccessibilityService.LargeTextEnabled = e.Value;
-        ApplyLargeTextState();
 
-        // Apply font scale to all pages in the current window
-        var window = Application.Current?.Windows.FirstOrDefault();
-        if (window?.Page is Shell shell)
+        await ApplyFontScaleToAllPages();
+
+        Announce(e.Value ? "Large text mode enabled" : "Large text mode disabled");
+    }
+
+    private async void OnHardwareDemoClicked(object? sender, EventArgs e)
+    {
+        try
         {
-            foreach (var page in shell.Navigation.NavigationStack)
+            await Shell.Current.GoToAsync(nameof(HardwarePage));
+            Announce("Opening hardware demo");
+        }
+        catch (Exception ex)
+        {
+            Announce($"Failed to open hardware demo: {ex.Message}");
+        }
+    }
+
+    private async Task ApplyFontScaleToAllPages()
+    {
+        var windows = Application.Current?.Windows;
+        if (windows == null) return;
+
+        foreach (var window in windows)
+        {
+            if (window.Page is Shell shell)
             {
-                AccessibilityService.ApplyFontScale(page);
+                if (shell.CurrentPage != null)
+                {
+                    AccessibilityService.ApplyFontScale(shell.CurrentPage);
+                }
+
+                foreach (var page in shell.Navigation.NavigationStack)
+                {
+                    AccessibilityService.ApplyFontScale(page);
+                }
+
+                var modalStack = shell.Navigation.ModalStack;
+                foreach (var page in modalStack)
+                {
+                    AccessibilityService.ApplyFontScale(page);
+                }
+            }
+            else if (window.Page != null)
+            {
+                AccessibilityService.ApplyFontScale(window.Page);
             }
         }
 
-        Announce(e.Value ? "Large text mode enabled" : "Large text mode disabled");
+        await Task.CompletedTask;
     }
 
     private void ApplyLargeTextState()

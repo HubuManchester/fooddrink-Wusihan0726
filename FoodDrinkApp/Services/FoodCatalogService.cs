@@ -68,13 +68,19 @@ public static class FoodCatalogService
         }
     ];
 
-    private static List<FoodItem> cachedItems = new(LocalFallbackItems);
+    private static List<FoodItem> cachedItems = new();
 
     public static bool LastLoadUsedMockApi { get; private set; }
 
     public static async Task<IReadOnlyList<FoodItem>> SearchAsync(string? query)
     {
         var items = await GetAllAsync();
+
+        if (items.Count == 0)
+        {
+            items = LocalFallbackItems;
+            cachedItems = new List<FoodItem>(LocalFallbackItems);
+        }
 
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -94,6 +100,11 @@ public static class FoodCatalogService
 
     public static async Task<FoodItem?> GetByIdAsync(string id)
     {
+        if (cachedItems.Count == 0)
+        {
+            await GetAllAsync();
+        }
+
         if (MockApiConfig.IsConfigured)
         {
             try
@@ -109,7 +120,7 @@ public static class FoodCatalogService
             }
             catch
             {
-                // Fall back to the last loaded cache below.
+                // Fall back to cache
             }
         }
 
@@ -120,17 +131,25 @@ public static class FoodCatalogService
     {
         if (MockApiConfig.IsConfigured)
         {
-            var response = await HttpClient.PostAsJsonAsync(MockApiConfig.EndpointUrl, item, JsonOptions);
-            response.EnsureSuccessStatusCode();
-
-            var created = await response.Content.ReadFromJsonAsync<FoodItem>(JsonOptions);
-            if (created is not null)
+            try
             {
-                cachedItems.Add(created);
-                return created;
+                var response = await HttpClient.PostAsJsonAsync(MockApiConfig.EndpointUrl, item, JsonOptions);
+                response.EnsureSuccessStatusCode();
+
+                var created = await response.Content.ReadFromJsonAsync<FoodItem>(JsonOptions);
+                if (created is not null)
+                {
+                    cachedItems.Add(created);
+                    return created;
+                }
+            }
+            catch
+            {
+                // Fall back to local
             }
         }
 
+        item.Id = Guid.NewGuid().ToString("N");
         cachedItems.Add(item);
         return item;
     }
@@ -208,6 +227,10 @@ public static class FoodCatalogService
         if (!MockApiConfig.IsConfigured)
         {
             LastLoadUsedMockApi = false;
+            if (cachedItems.Count == 0)
+            {
+                cachedItems = new List<FoodItem>(LocalFallbackItems);
+            }
             return cachedItems;
         }
 
@@ -227,6 +250,10 @@ public static class FoodCatalogService
         }
 
         LastLoadUsedMockApi = false;
+        if (cachedItems.Count == 0)
+        {
+            cachedItems = new List<FoodItem>(LocalFallbackItems);
+        }
         return cachedItems;
     }
 }

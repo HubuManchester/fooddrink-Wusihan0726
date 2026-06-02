@@ -45,17 +45,9 @@
                     <Entry x:Name="NameEntry"
                            Placeholder="Name"
                            SemanticProperties.Hint="Required food or drink name" />
-                    <Picker x:Name="CategoryPicker"
-                            Title="Category"
-                            SemanticProperties.Hint="Required category">
-                        <Picker.Items>
-                            <x:String>Breakfast</x:String>
-                            <x:String>Lunch</x:String>
-                            <x:String>Dinner</x:String>
-                            <x:String>Snack</x:String>
-                            <x:String>Drink</x:String>
-                        </Picker.Items>
-                    </Picker>
+                    <Entry x:Name="CategoryEntry"
+                           Placeholder="Category"
+                           SemanticProperties.Hint="Category (e.g., Breakfast, Lunch, Dinner, Drink)" />
                     <Editor x:Name="DescriptionEditor"
                             Placeholder="Description, ingredients, flavour, or context"
                             AutoSize="TextChanges"

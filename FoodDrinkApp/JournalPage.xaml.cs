@@ -5,23 +5,48 @@ namespace FoodDrinkApp;
 
 public partial class JournalPage : ContentPage
 {
+    private IReadOnlyList<JournalEntry> allEntries = new List<JournalEntry>();
+
     public JournalPage()
     {
         InitializeComponent();
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        AccessibilityService.ApplyFontScale(this);
-        await LoadJournalEntriesAsync();
+        ApplyFontScale();
+        _ = LoadJournalEntriesAsync();
     }
 
-    private Task LoadJournalEntriesAsync()
+    private void ApplyFontScale()
     {
-        var entries = JournalService.GetAllEntries();
-        JournalCollection.ItemsSource = entries;
-        return Task.CompletedTask;
+        AccessibilityService.ApplyFontScale(this);
+    }
+
+    private async Task LoadJournalEntriesAsync(string? query = null)
+    {
+        allEntries = JournalService.GetAllEntries();
+
+        IReadOnlyList<JournalEntry> dataToShow;
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            dataToShow = allEntries;
+        }
+        else
+        {
+            var filtered = allEntries.Where(e =>
+                e.MealType.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (e.LocationAddress != null && e.LocationAddress.Contains(query, StringComparison.OrdinalIgnoreCase)) ||
+                e.Notes.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            dataToShow = filtered;
+        }
+
+        JournalCollection.ItemsSource = dataToShow;
+
+        await Task.Delay(50);
+        ApplyFontScale();
     }
 
     private async void OnAddClicked(object? sender, EventArgs e)
@@ -37,50 +62,21 @@ public partial class JournalPage : ContentPage
         }
     }
 
-    private async void OnEditClicked(object? sender, EventArgs e)
+    private async void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is string id)
-        {
-            var parameters = new Dictionary<string, object>
-            {
-                { "id", id }
-            };
-            await Shell.Current.GoToAsync($"{nameof(EditJournalPage)}", parameters);
-        }
+        await LoadJournalEntriesAsync(e.NewTextValue);
     }
 
-    private async void OnDeleteClicked(object? sender, EventArgs e)
+    private async void OnSearchButtonPressed(object? sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is string id)
-        {
-            var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this journal entry?", "Yes", "No");
-            if (!confirm) return;
-
-            try
-            {
-                var success = await JournalService.DeleteEntryAsync(id);
-                if (success)
-                {
-                    HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
-                    await LoadJournalEntriesAsync();
-                    SemanticScreenReader.Announce("Journal entry deleted");
-                }
-                else
-                {
-                    await DisplayAlert("Error", "Failed to delete entry", "OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", ex.Message, "OK");
-            }
-        }
+        await LoadJournalEntriesAsync(SearchJournalBar.Text);
     }
 
     private async void OnRefreshing(object? sender, EventArgs e)
     {
-        await LoadJournalEntriesAsync();
+        await LoadJournalEntriesAsync(SearchJournalBar.Text);
         JournalRefreshView.IsRefreshing = false;
+        ApplyFontScale();
         SemanticScreenReader.Announce("Journal refreshed");
     }
 }

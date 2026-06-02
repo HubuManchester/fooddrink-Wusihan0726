@@ -1,6 +1,5 @@
 ﻿using FoodDrinkApp.Models;
 using FoodDrinkApp.Services;
-using System.Formats.Tar;
 
 namespace FoodDrinkApp;
 
@@ -8,7 +7,6 @@ namespace FoodDrinkApp;
 public partial class EditFoodPage : ContentPage
 {
     private FoodItem? currentItem;
-    private string originalId = string.Empty;
 
     public string ItemId
     {
@@ -36,12 +34,8 @@ public partial class EditFoodPage : ContentPage
             return;
         }
 
-        originalId = currentItem.Id;
         NameEntry.Text = currentItem.Name;
-
-        var categoryIndex = CategoryPicker.Items.IndexOf(currentItem.Category);
-        CategoryPicker.SelectedIndex = categoryIndex >= 0 ? categoryIndex : 0;
-
+        CategoryEntry.Text = currentItem.Category;
         DescriptionEditor.Text = currentItem.Description;
         CaloriesEntry.Text = currentItem.Calories.ToString();
         ProteinEntry.Text = currentItem.Protein.ToString();
@@ -65,7 +59,7 @@ public partial class EditFoodPage : ContentPage
             if (currentItem == null) return;
 
             currentItem.Name = NameEntry.Text!.Trim();
-            currentItem.Category = CategoryPicker.SelectedItem?.ToString() ?? "Snack";
+            currentItem.Category = CategoryEntry.Text!.Trim();
             currentItem.Description = DescriptionEditor.Text!.Trim();
             currentItem.Calories = calories;
             currentItem.Protein = protein;
@@ -87,7 +81,7 @@ public partial class EditFoodPage : ContentPage
             }
             else
             {
-                await DisplayAlert("Error", "Failed to update record", "OK");
+                await DisplayAlert("Error", "Failed to update record. The API may not support updates.", "OK");
             }
         }
         catch (Exception ex)
@@ -110,9 +104,9 @@ public partial class EditFoodPage : ContentPage
             return "Please enter a food or drink name.";
         }
 
-        if (CategoryPicker.SelectedIndex < 0)
+        if (string.IsNullOrWhiteSpace(CategoryEntry.Text))
         {
-            return "Please choose a category.";
+            return "Please enter a category.";
         }
 
         if (string.IsNullOrWhiteSpace(DescriptionEditor.Text))
@@ -141,5 +135,15 @@ public partial class EditFoodPage : ContentPage
         ValidationLabel.Text = message;
         ValidationPanel.IsVisible = true;
         SemanticScreenReader.Announce(message);
+
+        // Auto hide validation panel after 3 seconds
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                ValidationPanel.IsVisible = false;
+            });
+        });
     }
 }

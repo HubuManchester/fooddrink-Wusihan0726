@@ -31,6 +31,7 @@
                 </Grid>
             </Border>
 
+            <!-- Basic Information Section -->
             <Border StrokeThickness="0"
                     BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
                     Padding="16">
@@ -44,26 +45,25 @@
                            TextColor="{StaticResource Primary}" />
                     <Entry x:Name="NameEntry"
                            Placeholder="Name"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
                            SemanticProperties.Hint="Required food or drink name" />
-                    <Picker x:Name="CategoryPicker"
-                            Title="Category"
-                            SemanticProperties.Hint="Required category">
-                        <Picker.Items>
-                            <x:String>Breakfast</x:String>
-                            <x:String>Lunch</x:String>
-                            <x:String>Dinner</x:String>
-                            <x:String>Snack</x:String>
-                            <x:String>Drink</x:String>
-                        </Picker.Items>
-                    </Picker>
+                    <Entry x:Name="CategoryEntry"
+                           Placeholder="Category"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
+                           SemanticProperties.Hint="Category (e.g., Breakfast, Lunch, Dinner, Drink)" />
                     <Editor x:Name="DescriptionEditor"
                             Placeholder="Description, ingredients, flavour, or context"
                             AutoSize="TextChanges"
                             HeightRequest="104"
+                            BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                            TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
                             SemanticProperties.Hint="Describe this food or drink" />
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Nutrition Data Section -->
             <Border StrokeThickness="0"
                     BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
                     Padding="16">
@@ -79,27 +79,38 @@
                         <Entry x:Name="CaloriesEntry"
                                Placeholder="Calories"
                                Keyboard="Numeric"
+                               BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                               TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
                                SemanticProperties.Hint="Required calories as a number" />
                         <Entry x:Name="ProteinEntry"
                                Grid.Column="1"
                                Placeholder="Protein (g)"
-                               Keyboard="Numeric" />
+                               Keyboard="Numeric"
+                               BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                               TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}" />
                     </Grid>
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                         <Entry x:Name="CarbsEntry"
                                Placeholder="Carbs (g)"
-                               Keyboard="Numeric" />
+                               Keyboard="Numeric"
+                               BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                               TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}" />
                         <Entry x:Name="FatEntry"
                                Grid.Column="1"
                                Placeholder="Fat (g)"
-                               Keyboard="Numeric" />
+                               Keyboard="Numeric"
+                               BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                               TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}" />
                     </Grid>
                     <Entry x:Name="AllergyEntry"
                            Placeholder="Allergy note or dietary restriction"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
                            SemanticProperties.Hint="Enter allergy or dietary information" />
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Validation Panel -->
             <Border x:Name="ValidationPanel"
                     IsVisible="False"
                     StrokeThickness="0"
@@ -113,19 +124,21 @@
                        FontAttributes="Bold" />
             </Border>
 
+            <!-- Action Buttons -->
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                 <Button Text="Save Changes"
-                        FontAttributes="Bold"
                         BackgroundColor="{StaticResource Primary}"
-                        TextColor="#FFFFFF"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="50"
                         Clicked="OnSaveClicked"
                         SemanticProperties.Hint="Save changes to this record" />
-                <Button Text="Cancel"
-                        FontAttributes="Bold"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
-                        BorderColor="{StaticResource Secondary}"
-                        BorderWidth="1"
-                        TextColor="{StaticResource Secondary}"
+                <Button Grid.Column="1"
+                        Text="Cancel"
+                        BackgroundColor="{StaticResource Secondary}"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="50"
                         Clicked="OnCancelClicked"
                         SemanticProperties.Hint="Cancel editing" />
             </Grid>

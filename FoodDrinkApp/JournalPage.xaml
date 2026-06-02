@@ -5,139 +5,157 @@
              x:Class="FoodDrinkApp.JournalPage"
              Title="Journal">
 
-	<ContentPage.Background>
-		<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-			<GradientStop Color="{AppThemeBinding Light=#FDE8E8, Dark=#1A1A1A}" Offset="0.0" />
-			<GradientStop Color="{AppThemeBinding Light=#F5F5F0, Dark=#1A1A1A}" Offset="0.5" />
-			<GradientStop Color="{AppThemeBinding Light=#E8F0E8, Dark=#0F0F0F}" Offset="1.0" />
-		</LinearGradientBrush>
-	</ContentPage.Background>
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="{AppThemeBinding Light=#FDE8E8, Dark=#1A1A1A}" Offset="0.0" />
+            <GradientStop Color="{AppThemeBinding Light=#F5F5F0, Dark=#1A1A1A}" Offset="0.45" />
+            <GradientStop Color="{AppThemeBinding Light=#E8F0E8, Dark=#0F0F0F}" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
 
-	<Grid RowDefinitions="Auto,*">
-		<Grid Padding="20,18,20,12">
-			<Border StrokeThickness="0" Padding="16" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}">
-				<Border.StrokeShape>
-					<RoundRectangle CornerRadius="16" />
-				</Border.StrokeShape>
-				<Grid RowDefinitions="Auto,Auto" RowSpacing="6">
-					<Label Text="Meal Journal"
+    <Grid RowDefinitions="Auto,Auto,*">
+        <!-- Header -->
+        <Grid Padding="20,18,20,12">
+            <Border StrokeThickness="0" Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#81C784" Offset="0.0" />
+                        <GradientStop Color="#E8B4B4" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                    <Label Text="Meal Journal"
                            FontSize="28"
                            FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#FFFFFF}"
+                           TextColor="#FFFFFF"
                            SemanticProperties.HeadingLevel="Level1" />
-					<Label Grid.Row="1"
-                           Text="Capture your meals with photos, locations, and notes."
+                    <Label Grid.Row="1"
+                           Text="Capture your meals"
                            FontSize="14"
-                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
-				</Grid>
-			</Border>
-		</Grid>
+                           TextColor="#FFFFFF"
+                           Opacity="0.9" />
+                </Grid>
+            </Border>
+        </Grid>
 
-		<RefreshView Grid.Row="1" x:Name="JournalRefreshView" Refreshing="OnRefreshing">
-			<CollectionView x:Name="JournalCollection"
+        <!-- Search Bar Row -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,0,16,12">
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#3A3A3A}"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <SearchBar x:Name="SearchJournalBar"
+                           Placeholder="Search journal entries..."
+                           TextChanged="OnSearchTextChanged"
+                           SearchButtonPressed="OnSearchButtonPressed"
+                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
+                           PlaceholderColor="{AppThemeBinding Light=#B0A0A0, Dark=#808080}"
+                           BackgroundColor="Transparent"
+                           SemanticProperties.Hint="Search journal entries" />
+            </Border>
+            <Button Grid.Column="1"
+                    Text="+"
+                    WidthRequest="48"
+                    HeightRequest="48"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="#FFFFFF"
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Padding="0"
+                    Clicked="OnAddClicked"
+                    SemanticProperties.Hint="Add new journal entry" />
+        </Grid>
+
+        <!-- Journal List -->
+        <RefreshView Grid.Row="2" x:Name="JournalRefreshView" Refreshing="OnRefreshing">
+            <CollectionView x:Name="JournalCollection"
                             SelectionMode="None"
                             EmptyView="No journal entries yet. Tap + to write your first meal diary."
                             Margin="16,0,16,18">
-				<CollectionView.ItemsLayout>
-					<LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
-				</CollectionView.ItemsLayout>
-				<CollectionView.ItemTemplate>
-					<DataTemplate x:DataType="models:JournalEntry">
-						<Border StrokeThickness="0"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeThickness="0"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
-                                Padding="0">
-							<Border.StrokeShape>
-								<RoundRectangle CornerRadius="16" />
-							</Border.StrokeShape>
-							<Grid Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*" RowSpacing="8" ColumnSpacing="8">
-								<!-- Header -->
-								<Label Grid.Row="0" Grid.ColumnSpan="4"
-                                       Text="{Binding DisplayTitle}"
-                                       FontSize="16"
-                                       FontAttributes="Bold"
-                                       TextColor="{StaticResource Primary}" />
+                                Padding="0"
+                                Margin="0,0,0,12"
+                                HorizontalOptions="FillAndExpand">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Padding="16" Spacing="8">
+                                <!-- Title Row -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <Label Text="{Binding DisplayTitle}"
+                                           FontSize="18"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
+                                           LineBreakMode="TailTruncation"
+                                           SemanticProperties.HeadingLevel="Level2" />
+                                    <Border Grid.Column="1"
+                                            StrokeThickness="0"
+                                            BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
+                                            Padding="8,4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding MealType}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource Secondary}" />
+                                    </Border>
+                                </Grid>
 
-								<!-- Location -->
-								<Label Grid.Row="1" Grid.ColumnSpan="4"
-                                       Text="{Binding LocationAddress, StringFormat='Location: {0}'}"
+                                <!-- Location Row - only show if has value -->
+                                <Label Text="{Binding LocationAddress}"
                                        FontSize="13"
-                                       TextColor="{StaticResource Secondary}"
-                                       IsVisible="{Binding LocationAddress}"
-                                       LineBreakMode="TailTruncation" />
+                                       TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
+                                       IsVisible="{Binding LocationAddress, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="1" />
 
-								<!-- Notes Preview -->
-								<Label Grid.Row="2" Grid.ColumnSpan="4"
-                                       Text="{Binding Notes}"
+                                <!-- Notes Row - only show if has value -->
+                                <Label Text="{Binding Notes}"
                                        FontSize="13"
-                                       TextColor="{AppThemeBinding Light=#5A4A4A, Dark=#C0C0C0}"
+                                       TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
+                                       IsVisible="{Binding Notes, Converter={StaticResource StringNotNullOrEmptyConverter}}"
                                        LineBreakMode="TailTruncation"
                                        MaxLines="2" />
 
-								<!-- Action Buttons -->
-								<Button Grid.Row="3" Grid.Column="1"
-                                        Text="View"
-                                        Padding="12,6"
-                                        BackgroundColor="{StaticResource Primary}"
-                                        TextColor="#FFFFFF"
-                                        FontSize="12"
-                                        CornerRadius="8"
-                                        CommandParameter="{Binding Id}"
-                                        Clicked="OnViewClicked"
-                                        SemanticProperties.Hint="View journal entry details" />
-
-								<Button Grid.Row="3" Grid.Column="2"
-                                        Text="Edit"
-                                        Padding="12,6"
-                                        BackgroundColor="{StaticResource Primary}"
-                                        TextColor="#FFFFFF"
-                                        FontSize="12"
-                                        CornerRadius="8"
-                                        CommandParameter="{Binding Id}"
-                                        Clicked="OnEditClicked"
-                                        SemanticProperties.Hint="Edit this journal entry" />
-
-								<Button Grid.Row="3" Grid.Column="3"
-                                        Text="Delete"
-                                        Padding="12,6"
-                                        BackgroundColor="{StaticResource Secondary}"
-                                        TextColor="#FFFFFF"
-                                        FontSize="12"
-                                        CornerRadius="8"
-                                        CommandParameter="{Binding Id}"
-                                        Clicked="OnDeleteClicked"
-                                        SemanticProperties.Hint="Delete this journal entry" />
-							</Grid>
-						</Border>
-					</DataTemplate>
-				</CollectionView.ItemTemplate>
-			</CollectionView>
-		</RefreshView>
-
-		<!-- Floating Action Button -->
-		<Grid Grid.Row="1" VerticalOptions="End" HorizontalOptions="End" Margin="0,0,20,20">
-			<Border WidthRequest="56"
-                    HeightRequest="56"
-                    StrokeThickness="0"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center">
-				<Border.Background>
-					<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-						<GradientStop Color="#81C784" Offset="0.0" />
-						<GradientStop Color="#E8B4B4" Offset="1.0" />
-					</LinearGradientBrush>
-				</Border.Background>
-				<Border.StrokeShape>
-					<RoundRectangle CornerRadius="28" />
-				</Border.StrokeShape>
-				<Button Text="+"
-                        FontSize="28"
-                        FontAttributes="Bold"
-                        TextColor="#FFFFFF"
-                        BackgroundColor="Transparent"
-                        Padding="0"
-                        Clicked="OnAddClicked"
-                        SemanticProperties.Hint="Add a new journal entry" />
-			</Border>
-		</Grid>
-	</Grid>
+                                <!-- Action Row -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,4,0,0">
+                                    <Label Text="Has photo"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Primary}"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding HasPhoto}" />
+                                    <Label Text="No photo"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#B0A0A0, Dark=#808080}"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding HasPhoto, Converter={StaticResource InvertedBoolConverter}}" />
+                                    <Button Grid.Column="1"
+                                            Text="View"
+                                            Padding="12,6"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            TextColor="#FFFFFF"
+                                            FontSize="12"
+                                            CornerRadius="8"
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnViewClicked"
+                                            SemanticProperties.Hint="View journal entry details" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>

@@ -1,6 +1,5 @@
 ﻿using FoodDrinkApp.Models;
 using FoodDrinkApp.Services;
-using Microsoft.Maui.Controls;
 
 namespace FoodDrinkApp;
 
@@ -8,10 +7,10 @@ namespace FoodDrinkApp;
 public partial class EditJournalPage : ContentPage
 {
     private JournalEntry? currentEntry;
-    private string currentMealType = "Lunch";
     private double? currentLatitude;
     private double? currentLongitude;
     private string? currentLocationAddress;
+    private string? currentPhotoPath;
 
     public string EntryId
     {
@@ -40,10 +39,11 @@ public partial class EditJournalPage : ContentPage
             return;
         }
 
-        currentMealType = currentEntry.MealType;
+        MealTypeEntry.Text = currentEntry.MealType;
         currentLatitude = currentEntry.Latitude;
         currentLongitude = currentEntry.Longitude;
         currentLocationAddress = currentEntry.LocationAddress;
+        currentPhotoPath = currentEntry.PhotoPath;
 
         NotesEditor.Text = currentEntry.Notes;
 
@@ -58,57 +58,58 @@ public partial class EditJournalPage : ContentPage
             CoordinateLabel.IsVisible = true;
         }
 
-        UpdateMealTypeButtonStyles(currentMealType);
-    }
-
-    private void UpdateMealTypeButtonStyles(string mealType)
-    {
-        var defaultBg = Application.Current?.UserAppTheme == AppTheme.Dark
-            ? (Color)Application.Current.Resources["Gray300"]
-            : (Color)Application.Current.Resources["Gray200"];
-        var defaultTextColor = Application.Current?.UserAppTheme == AppTheme.Dark
-            ? Colors.White
-            : (Color)Application.Current.Resources["Primary"];
-        var selectedBg = (Color)Application.Current.Resources["Primary"];
-        var selectedTextColor = Colors.White;
-
-        BreakfastButton.BackgroundColor = defaultBg;
-        BreakfastButton.TextColor = defaultTextColor;
-        LunchButton.BackgroundColor = defaultBg;
-        LunchButton.TextColor = defaultTextColor;
-        DinnerButton.BackgroundColor = defaultBg;
-        DinnerButton.TextColor = defaultTextColor;
-        SnackButton.BackgroundColor = defaultBg;
-        SnackButton.TextColor = defaultTextColor;
-
-        switch (mealType)
+        if (!string.IsNullOrWhiteSpace(currentPhotoPath) && File.Exists(currentPhotoPath))
         {
-            case "Breakfast":
-                BreakfastButton.BackgroundColor = selectedBg;
-                BreakfastButton.TextColor = selectedTextColor;
-                break;
-            case "Lunch":
-                LunchButton.BackgroundColor = selectedBg;
-                LunchButton.TextColor = selectedTextColor;
-                break;
-            case "Dinner":
-                DinnerButton.BackgroundColor = selectedBg;
-                DinnerButton.TextColor = selectedTextColor;
-                break;
-            case "Snack":
-                SnackButton.BackgroundColor = selectedBg;
-                SnackButton.TextColor = selectedTextColor;
-                break;
+            PhotoPreview.Source = ImageSource.FromFile(currentPhotoPath);
         }
     }
 
-    private void OnMealTypeClicked(object? sender, EventArgs e)
+    private async void OnTakePhotoClicked(object? sender, EventArgs e)
     {
-        var button = sender as Button;
-        if (button == null) return;
+        try
+        {
+            if (!MediaPicker.Default.IsCaptureSupported)
+            {
+                await ShowStatusAsync("Camera not supported on this device");
+                return;
+            }
 
-        currentMealType = button.Text;
-        UpdateMealTypeButtonStyles(currentMealType);
+            var photo = await MediaPicker.Default.CapturePhotoAsync();
+            if (photo is null)
+            {
+                await ShowStatusAsync("Photo capture cancelled");
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(currentPhotoPath) && File.Exists(currentPhotoPath))
+            {
+                try
+                {
+                    File.Delete(currentPhotoPath);
+                }
+                catch { }
+            }
+
+            var localPath = Path.Combine(FileSystem.CacheDirectory, $"{Guid.NewGuid()}.jpg");
+            await using var stream = await photo.OpenReadAsync();
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            await File.WriteAllBytesAsync(localPath, memoryStream.ToArray());
+
+            currentPhotoPath = localPath;
+            PhotoPreview.Source = ImageSource.FromFile(localPath);
+
+            HapticFeedback.Default.Perform(HapticFeedbackType.Click);
+            await ShowStatusAsync("Photo updated successfully");
+        }
+        catch (PermissionException)
+        {
+            await ShowStatusAsync("Camera permission denied. Please enable in device settings.");
+        }
+        catch (Exception ex)
+        {
+            await ShowStatusAsync($"Camera error: {ex.Message}");
+        }
     }
 
     private async void OnGetLocationClicked(object? sender, EventArgs e)
@@ -171,7 +172,6 @@ public partial class EditJournalPage : ContentPage
         }
         catch
         {
-            // Fall back to coordinate display
         }
 
         return null;
@@ -191,11 +191,14 @@ public partial class EditJournalPage : ContentPage
 
             if (currentEntry == null) return;
 
-            currentEntry.MealType = currentMealType;
+            var mealType = string.IsNullOrWhiteSpace(MealTypeEntry.Text) ? "Lunch" : MealTypeEntry.Text.Trim();
+
+            currentEntry.MealType = mealType;
             currentEntry.Notes = notes;
             currentEntry.LocationAddress = currentLocationAddress;
             currentEntry.Latitude = currentLatitude;
             currentEntry.Longitude = currentLongitude;
+            currentEntry.PhotoPath = currentPhotoPath;
 
             var success = await JournalService.UpdateEntryAsync(currentEntry);
 

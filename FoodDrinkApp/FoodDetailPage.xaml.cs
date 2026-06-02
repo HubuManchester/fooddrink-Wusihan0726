@@ -8,6 +8,11 @@ public partial class FoodDetailPage : ContentPage
 {
     private FoodItem? currentItem;
 
+    public string ItemId
+    {
+        set => _ = LoadItemAsync(value);
+    }
+
     public FoodDetailPage()
     {
         InitializeComponent();
@@ -23,11 +28,6 @@ public partial class FoodDetailPage : ContentPage
     {
         SpeechService.Stop();
         base.OnDisappearing();
-    }
-
-    public string ItemId
-    {
-        set => _ = LoadItemAsync(value);
     }
 
     private async Task LoadItemAsync(string id)
@@ -90,6 +90,44 @@ public partial class FoodDetailPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Vibration unavailable", ex.Message, "OK");
+        }
+    }
+
+    private async void OnEditClicked(object? sender, EventArgs e)
+    {
+        if (currentItem == null) return;
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "id", currentItem.Id }
+        };
+        await Shell.Current.GoToAsync($"{nameof(EditFoodPage)}", parameters);
+    }
+
+    private async void OnDeleteClicked(object? sender, EventArgs e)
+    {
+        if (currentItem == null) return;
+
+        var confirm = await DisplayAlert("Delete", $"Are you sure you want to delete '{currentItem.Name}'?", "Yes", "No");
+        if (!confirm) return;
+
+        try
+        {
+            var success = await FoodCatalogService.DeleteAsync(currentItem.Id);
+            if (success)
+            {
+                HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
+                SemanticScreenReader.Announce("Food item deleted");
+                await Shell.Current.GoToAsync("..");
+            }
+            else
+            {
+                await DisplayAlert("Error", "Failed to delete item", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 }

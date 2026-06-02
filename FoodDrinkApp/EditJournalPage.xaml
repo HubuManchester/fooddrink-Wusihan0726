@@ -31,7 +31,45 @@
                 </Grid>
             </Border>
 
-            <!-- Meal Type Section -->
+            <!-- Photo Section -->
+            <Border StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Meal Photo"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+
+                    <Border StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
+                            HeightRequest="200">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Image x:Name="PhotoPreview"
+                               Aspect="AspectFill"
+                               SemanticProperties.Description="Meal photo preview">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnTakePhotoClicked" />
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </Border>
+
+                    <Button Text="Take New Photo"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="44"
+                            Clicked="OnTakePhotoClicked"
+                            SemanticProperties.Hint="Take a new photo of your meal" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Meal Type Section - Changed to Entry -->
             <Border StrokeThickness="0"
                     BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
                     Padding="16">
@@ -44,32 +82,12 @@
                            FontAttributes="Bold"
                            TextColor="{StaticResource Secondary}" />
 
-                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
-                        <Button x:Name="BreakfastButton"
-                                Text="Breakfast"
-                                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}"
-                                TextColor="{StaticResource Primary}"
-                                CornerRadius="20"
-                                Clicked="OnMealTypeClicked" />
-                        <Button x:Name="LunchButton"
-                                Text="Lunch"
-                                BackgroundColor="{StaticResource Primary}"
-                                TextColor="#FFFFFF"
-                                CornerRadius="20"
-                                Clicked="OnMealTypeClicked" />
-                        <Button x:Name="DinnerButton"
-                                Text="Dinner"
-                                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}"
-                                TextColor="{StaticResource Primary}"
-                                CornerRadius="20"
-                                Clicked="OnMealTypeClicked" />
-                        <Button x:Name="SnackButton"
-                                Text="Snack"
-                                BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#3A3A3A}"
-                                TextColor="{StaticResource Primary}"
-                                CornerRadius="20"
-                                Clicked="OnMealTypeClicked" />
-                    </Grid>
+                    <Entry x:Name="MealTypeEntry"
+                           Placeholder="e.g., Breakfast, Lunch, Dinner, Snack"
+                           FontSize="15"
+                           BackgroundColor="{AppThemeBinding Light=#F8F8F8, Dark=#3A3A3A}"
+                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
+                           SemanticProperties.Hint="Enter meal type" />
                 </VerticalStackLayout>
             </Border>
 
@@ -99,7 +117,9 @@
 
                     <Button Text="Update Location"
                             BackgroundColor="{StaticResource Secondary}"
-                            TextColor="#FFFFFF"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="44"
                             Clicked="OnGetLocationClicked"
                             SemanticProperties.Hint="Update current location" />
                 </VerticalStackLayout>
@@ -131,15 +151,17 @@
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                 <Button Text="Save Changes"
                         BackgroundColor="{StaticResource Primary}"
-                        TextColor="#FFFFFF"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="50"
                         Clicked="OnSaveClicked"
                         SemanticProperties.Hint="Save changes to this entry" />
                 <Button Grid.Column="1"
                         Text="Cancel"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
-                        BorderColor="{StaticResource Secondary}"
-                        BorderWidth="1"
-                        TextColor="{StaticResource Secondary}"
+                        BackgroundColor="{StaticResource Secondary}"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="50"
                         Clicked="OnCancelClicked"
                         SemanticProperties.Hint="Cancel editing" />
             </Grid>

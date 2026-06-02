@@ -122,6 +122,29 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Hardware Demo Card -->
+            <Border Style="{StaticResource CardBorder}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Hardware Demo" Style="{StaticResource SectionTitle}" />
+
+                    <Label Text="Test camera, location, speech, and haptic feedback"
+                           FontSize="13"
+                           TextColor="{AppThemeBinding Light=#9A8A8A, Dark=#A0A0A0}" />
+
+                    <Button Text="Open Hardware Demo"
+                            BackgroundColor="{StaticResource Secondary}"
+                            TextColor="#FFFFFF"
+                            CornerRadius="12"
+                            HeightRequest="44"
+                            Clicked="OnHardwareDemoClicked"
+                            SemanticProperties.Hint="Open hardware demonstration page" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- About Card -->
             <Border Style="{StaticResource CardBorder}">
                 <Border.StrokeShape>

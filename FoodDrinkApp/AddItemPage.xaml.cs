@@ -31,7 +31,7 @@ public partial class AddItemPage : ContentPage
             var item = new FoodItem
             {
                 Name = NameEntry.Text!.Trim(),
-                Category = CategoryPicker.SelectedItem?.ToString() ?? "Snack",
+                Category = CategoryEntry.Text!.Trim(),
                 Description = DescriptionEditor.Text!.Trim(),
                 Calories = calories,
                 Protein = protein,
@@ -40,7 +40,7 @@ public partial class AddItemPage : ContentPage
                 AllergyNote = string.IsNullOrWhiteSpace(AllergyEntry.Text)
                     ? "No allergy note provided."
                     : AllergyEntry.Text.Trim(),
-                Tags = $"{NameEntry.Text} {CategoryPicker.SelectedItem} {DescriptionEditor.Text}"
+                Tags = $"{NameEntry.Text} {CategoryEntry.Text} {DescriptionEditor.Text}"
             };
 
             await FoodCatalogService.AddAsync(item);
@@ -71,9 +71,9 @@ public partial class AddItemPage : ContentPage
             return "Please enter a food or drink name.";
         }
 
-        if (CategoryPicker.SelectedIndex < 0)
+        if (string.IsNullOrWhiteSpace(CategoryEntry.Text))
         {
-            return "Please choose a category.";
+            return "Please enter a category.";
         }
 
         if (string.IsNullOrWhiteSpace(DescriptionEditor.Text))
@@ -102,5 +102,15 @@ public partial class AddItemPage : ContentPage
         ValidationLabel.Text = message;
         ValidationPanel.IsVisible = true;
         SemanticScreenReader.Announce(message);
+
+        // Auto hide validation panel after 3 seconds
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                ValidationPanel.IsVisible = false;
+            });
+        });
     }
 }

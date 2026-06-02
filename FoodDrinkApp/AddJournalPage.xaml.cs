@@ -6,7 +6,6 @@ namespace FoodDrinkApp;
 public partial class AddJournalPage : ContentPage
 {
     private string? currentPhotoPath;
-    private string currentMealType = "Lunch";
     private double? currentLatitude;
     private double? currentLongitude;
     private string? currentLocationAddress;
@@ -20,43 +19,6 @@ public partial class AddJournalPage : ContentPage
     {
         base.OnAppearing();
         AccessibilityService.ApplyFontScale(this);
-    }
-
-    private void OnMealTypeClicked(object? sender, EventArgs e)
-    {
-        var button = sender as Button;
-        if (button == null) return;
-
-        // Reset all button styles
-        ResetMealTypeButtons();
-
-        // Set selected button style
-        button.BackgroundColor = Application.Current?.UserAppTheme == AppTheme.Dark
-            ? (Color)Application.Current.Resources["Secondary"]
-            : (Color)Application.Current.Resources["Primary"];
-        button.TextColor = Colors.White;
-
-        // Update current meal type
-        currentMealType = button.Text;
-    }
-
-    private void ResetMealTypeButtons()
-    {
-        var defaultBg = Application.Current?.UserAppTheme == AppTheme.Dark
-            ? (Color)Application.Current.Resources["Gray300"]
-            : (Color)Application.Current.Resources["Gray200"];
-        var defaultTextColor = Application.Current?.UserAppTheme == AppTheme.Dark
-            ? Colors.White
-            : (Color)Application.Current.Resources["Primary"];
-
-        BreakfastButton.BackgroundColor = defaultBg;
-        BreakfastButton.TextColor = defaultTextColor;
-        LunchButton.BackgroundColor = defaultBg;
-        LunchButton.TextColor = defaultTextColor;
-        DinnerButton.BackgroundColor = defaultBg;
-        DinnerButton.TextColor = defaultTextColor;
-        SnackButton.BackgroundColor = defaultBg;
-        SnackButton.TextColor = defaultTextColor;
     }
 
     private async void OnTakePhotoClicked(object? sender, EventArgs e)
@@ -76,7 +38,6 @@ public partial class AddJournalPage : ContentPage
                 return;
             }
 
-            // Save photo to local storage
             var localPath = Path.Combine(FileSystem.CacheDirectory, $"{Guid.NewGuid()}.jpg");
             await using var stream = await photo.OpenReadAsync();
             using var memoryStream = new MemoryStream();
@@ -159,7 +120,6 @@ public partial class AddJournalPage : ContentPage
         }
         catch
         {
-            // Fall back to coordinate display
         }
 
         return null;
@@ -176,11 +136,12 @@ public partial class AddJournalPage : ContentPage
                 return;
             }
 
+            var mealType = string.IsNullOrWhiteSpace(MealTypeEntry.Text) ? "Meal" : MealTypeEntry.Text;
             var locationText = string.IsNullOrWhiteSpace(currentLocationAddress)
                 ? ""
                 : $" Location: {currentLocationAddress}. ";
 
-            var speechText = $"Meal: {currentMealType}. {locationText} Notes: {notes}";
+            var speechText = $"{mealType}. {locationText} Notes: {notes}";
             await SpeechService.SpeakAsync(speechText);
             await ShowStatusAsync("Reading aloud...");
         }
@@ -202,9 +163,11 @@ public partial class AddJournalPage : ContentPage
                 return;
             }
 
+            var mealType = string.IsNullOrWhiteSpace(MealTypeEntry.Text) ? "Lunch" : MealTypeEntry.Text.Trim();
+
             var entry = new JournalEntry
             {
-                MealType = currentMealType,
+                MealType = mealType,
                 Notes = notes,
                 PhotoPath = currentPhotoPath,
                 LocationAddress = currentLocationAddress,

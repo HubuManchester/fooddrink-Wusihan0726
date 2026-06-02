@@ -2,8 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:FoodDrinkApp.Models"
+             xmlns:converters="clr-namespace:FoodDrinkApp.Converters"
              x:Class="FoodDrinkApp.MainPage"
              Title="Foods">
+
+    <ContentPage.Resources>
+        <converters:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter" />
+    </ContentPage.Resources>
 
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -80,17 +85,18 @@
                             EmptyView="No matching foods found"
                             Margin="16,0,16,18">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:FoodItem">
+                    <DataTemplate>
                         <Border StrokeThickness="0"
                                 BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A2A2A}"
                                 Padding="0"
-                                Margin="0,0,0,12">
+                                Margin="0,0,0,12"
+                                HorizontalOptions="FillAndExpand">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
-                            <Grid ColumnDefinitions="6,*">
-                                <BoxView BackgroundColor="{StaticResource Primary}" />
-                                <Grid Grid.Column="1" Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,*,*" RowSpacing="6" ColumnSpacing="8">
+                            <VerticalStackLayout Padding="16" Spacing="8">
+                                <!-- Name and Calories Row -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                                     <Label Text="{Binding Name}"
                                            FontSize="18"
                                            FontAttributes="Bold"
@@ -109,49 +115,42 @@
                                                FontAttributes="Bold"
                                                TextColor="{StaticResource Secondary}" />
                                     </Border>
-                                    <Label Grid.Row="1"
-                                           Grid.ColumnSpan="4"
-                                           Text="{Binding Description}"
-                                           FontSize="13"
-                                           TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
-                                           LineBreakMode="TailTruncation"
-                                           MaxLines="2" />
-                                    <Label Grid.Row="2"
-                                           Grid.ColumnSpan="4"
-                                           Text="{Binding MacroSummary}"
-                                           FontSize="12"
-                                           TextColor="{StaticResource Primary}" />
-                                    <Label Grid.Row="3"
-                                           Grid.Column="0"
-                                           Text="{Binding Category}"
+                                </Grid>
+
+                                <!-- Description Row - only show if has value -->
+                                <Label Text="{Binding Description}"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
+                                       IsVisible="{Binding Description, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2" />
+
+                                <!-- Macro Summary Row - only show if has value -->
+                                <Label Text="{Binding MacroSummary}"
+                                       FontSize="12"
+                                       IsVisible="{Binding MacroSummary, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                       TextColor="{StaticResource Primary}" />
+
+                                <!-- Action Row -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,4,0,0">
+                                    <Label Text="{Binding Category}"
                                            FontSize="12"
                                            FontAttributes="Bold"
                                            TextColor="{StaticResource Secondary}"
-                                           VerticalOptions="Center" />
-                                    <Button Grid.Row="3"
-                                            Grid.Column="2"
-                                            Text="Edit"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding Category, Converter={StaticResource StringNotNullOrEmptyConverter}}" />
+                                    <Button Grid.Column="1"
+                                            Text="View"
                                             Padding="12,6"
                                             BackgroundColor="{StaticResource Primary}"
                                             TextColor="#FFFFFF"
                                             FontSize="12"
                                             CornerRadius="8"
                                             CommandParameter="{Binding Id}"
-                                            Clicked="OnEditClicked"
-                                            SemanticProperties.Hint="Edit this food item" />
-                                    <Button Grid.Row="3"
-                                            Grid.Column="3"
-                                            Text="Delete"
-                                            Padding="12,6"
-                                            BackgroundColor="{StaticResource Secondary}"
-                                            TextColor="#FFFFFF"
-                                            FontSize="12"
-                                            CornerRadius="8"
-                                            CommandParameter="{Binding Id}"
-                                            Clicked="OnDeleteClicked"
-                                            SemanticProperties.Hint="Delete this food item" />
+                                            Clicked="OnDetailsClicked"
+                                            SemanticProperties.Hint="View nutrition details" />
                                 </Grid>
-                            </Grid>
+                            </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

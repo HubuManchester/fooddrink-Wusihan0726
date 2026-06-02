@@ -13,13 +13,22 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        AccessibilityService.ApplyFontScale(this);
+        ApplyFontScale();
         await LoadFoodItemsAsync(SearchFoodBar.Text);
+    }
+
+    private void ApplyFontScale()
+    {
+        AccessibilityService.ApplyFontScale(this);
     }
 
     private async Task LoadFoodItemsAsync(string? query = null)
     {
-        FoodCollection.ItemsSource = await FoodCatalogService.SearchAsync(query);
+        var items = await FoodCatalogService.SearchAsync(query);
+        FoodCollection.ItemsSource = items;
+
+        await Task.Delay(50);
+        ApplyFontScale();
     }
 
     private async void OnAddClicked(object? sender, EventArgs e)
@@ -32,46 +41,6 @@ public partial class MainPage : ContentPage
         if (sender is Button button && button.CommandParameter is string id)
         {
             await Shell.Current.GoToAsync($"{nameof(FoodDetailPage)}?id={Uri.EscapeDataString(id)}");
-        }
-    }
-
-    private async void OnEditClicked(object? sender, EventArgs e)
-    {
-        if (sender is Button button && button.CommandParameter is string id)
-        {
-            var parameters = new Dictionary<string, object>
-            {
-                { "id", id }
-            };
-            await Shell.Current.GoToAsync($"{nameof(EditFoodPage)}", parameters);
-        }
-    }
-
-    private async void OnDeleteClicked(object? sender, EventArgs e)
-    {
-        if (sender is Button button && button.CommandParameter is string id)
-        {
-            var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this item?", "Yes", "No");
-            if (!confirm) return;
-
-            try
-            {
-                var success = await FoodCatalogService.DeleteAsync(id);
-                if (success)
-                {
-                    HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
-                    await LoadFoodItemsAsync(SearchFoodBar.Text);
-                    SemanticScreenReader.Announce("Item deleted");
-                }
-                else
-                {
-                    await DisplayAlert("Error", "Failed to delete item", "OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", ex.Message, "OK");
-            }
         }
     }
 
@@ -89,6 +58,7 @@ public partial class MainPage : ContentPage
     {
         await LoadFoodItemsAsync(SearchFoodBar.Text);
         FoodRefreshView.IsRefreshing = false;
+        ApplyFontScale();
         var source = FoodCatalogService.LastLoadUsedMockApi ? "mockapi.io" : "local fallback data";
         SemanticScreenReader.Announce($"Food list refreshed. Source: {source}");
     }

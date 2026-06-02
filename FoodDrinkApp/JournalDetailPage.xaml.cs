@@ -8,14 +8,14 @@ public partial class JournalDetailPage : ContentPage
 {
     private JournalEntry? currentEntry;
 
-    public JournalDetailPage()
-    {
-        InitializeComponent();
-    }
-
     public string EntryId
     {
         set => _ = LoadEntryAsync(value);
+    }
+
+    public JournalDetailPage()
+    {
+        InitializeComponent();
     }
 
     protected override void OnAppearing()
@@ -42,8 +42,8 @@ public partial class JournalDetailPage : ContentPage
     {
         if (currentEntry == null) return;
 
-        MealTypeLabel.Text = currentEntry.MealType;
         DateLabel.Text = currentEntry.Date.ToString("MMMM dd, yyyy - hh:mm tt");
+        MealTypeLabel.Text = currentEntry.MealType;
         NotesLabel.Text = currentEntry.Notes;
 
         if (!string.IsNullOrWhiteSpace(currentEntry.LocationAddress))
@@ -72,7 +72,7 @@ public partial class JournalDetailPage : ContentPage
                 ? ""
                 : $" Location: {currentEntry.LocationAddress}. ";
 
-            var speechText = $"Meal: {currentEntry.MealType}. {locationText} Notes: {currentEntry.Notes}";
+            var speechText = $"{currentEntry.MealType}. {locationText} Notes: {currentEntry.Notes}";
             await SpeechService.SpeakAsync(speechText);
             await ShowStatusAsync("Reading aloud...");
         }
@@ -82,19 +82,37 @@ public partial class JournalDetailPage : ContentPage
         }
     }
 
+    private async void OnEditClicked(object? sender, EventArgs e)
+    {
+        if (currentEntry == null) return;
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "id", currentEntry.Id }
+        };
+        await Shell.Current.GoToAsync($"{nameof(EditJournalPage)}", parameters);
+    }
+
     private async void OnDeleteClicked(object? sender, EventArgs e)
     {
         if (currentEntry == null) return;
 
-        var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this journal entry?", "Yes", "No");
+        var confirm = await DisplayAlert("Delete", $"Are you sure you want to delete this journal entry?", "Yes", "No");
         if (!confirm) return;
 
         try
         {
-            await JournalService.DeleteEntryAsync(currentEntry.Id);
-            HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
-            await ShowStatusAsync("Entry deleted");
-            await Shell.Current.GoToAsync("..");
+            var success = await JournalService.DeleteEntryAsync(currentEntry.Id);
+            if (success)
+            {
+                HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
+                SemanticScreenReader.Announce("Journal entry deleted");
+                await Shell.Current.GoToAsync("..");
+            }
+            else
+            {
+                await DisplayAlert("Error", "Failed to delete entry", "OK");
+            }
         }
         catch (Exception ex)
         {
