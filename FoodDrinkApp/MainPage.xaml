@@ -94,31 +94,31 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
-                            <VerticalStackLayout Padding="16" Spacing="8">
+                            <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6" ColumnSpacing="10">
                                 <!-- Name and Calories Row -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                                    <Label Text="{Binding Name}"
-                                           FontSize="18"
+                                <Label Grid.Row="0" Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
+                                       LineBreakMode="TailTruncation"
+                                       SemanticProperties.HeadingLevel="Level2" />
+                                <Border Grid.Row="0" Grid.Column="1"
+                                        StrokeThickness="0"
+                                        BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
+                                        Padding="8,4">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding CaloriesLabel}"
+                                           FontSize="12"
                                            FontAttributes="Bold"
-                                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
-                                           LineBreakMode="TailTruncation"
-                                           SemanticProperties.HeadingLevel="Level2" />
-                                    <Border Grid.Column="1"
-                                            StrokeThickness="0"
-                                            BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
-                                            Padding="8,4">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="8" />
-                                        </Border.StrokeShape>
-                                        <Label Text="{Binding CaloriesLabel}"
-                                               FontSize="12"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource Secondary}" />
-                                    </Border>
-                                </Grid>
+                                           TextColor="{StaticResource Secondary}" />
+                                </Border>
 
                                 <!-- Description Row - only show if has value -->
-                                <Label Text="{Binding Description}"
+                                <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                       Text="{Binding Description}"
                                        FontSize="13"
                                        TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
                                        IsVisible="{Binding Description, Converter={StaticResource StringNotNullOrEmptyConverter}}"
@@ -126,13 +126,14 @@
                                        MaxLines="2" />
 
                                 <!-- Macro Summary Row - only show if has value -->
-                                <Label Text="{Binding MacroSummary}"
+                                <Label Grid.Row="2" Grid.ColumnSpan="2"
+                                       Text="{Binding MacroSummary}"
                                        FontSize="12"
                                        IsVisible="{Binding MacroSummary, Converter={StaticResource StringNotNullOrEmptyConverter}}"
                                        TextColor="{StaticResource Primary}" />
 
                                 <!-- Action Row -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,4,0,0">
+                                <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,4,0,0">
                                     <Label Text="{Binding Category}"
                                            FontSize="12"
                                            FontAttributes="Bold"
@@ -150,7 +151,7 @@
                                             Clicked="OnDetailsClicked"
                                             SemanticProperties.Hint="View nutrition details" />
                                 </Grid>
-                            </VerticalStackLayout>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

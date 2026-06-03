@@ -45,6 +45,9 @@ public partial class SettingsPage : ContentPage
         };
 
         Announce("Theme updated");
+
+        // Force refresh CollectionView layouts after theme change
+        ForceRefreshCollectionViews();
     }
 
     private async void OnLargeTextToggled(object? sender, ToggledEventArgs e)
@@ -54,6 +57,9 @@ public partial class SettingsPage : ContentPage
         await ApplyFontScaleToAllPages();
 
         Announce(e.Value ? "Large text mode enabled" : "Large text mode disabled");
+
+        // Force refresh CollectionView layouts after font scale change
+        ForceRefreshCollectionViews();
     }
 
     private async void OnHardwareDemoClicked(object? sender, EventArgs e)
@@ -120,5 +126,69 @@ public partial class SettingsPage : ContentPage
     {
         SettingsStatusLabel.Text = message;
         SemanticScreenReader.Announce(message);
+    }
+
+    private void ForceRefreshCollectionViews()
+    {
+        // Delay to ensure theme/font changes have been applied
+        Task.Delay(150).ContinueWith(_ =>
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var shell = Application.Current?.Windows?.FirstOrDefault()?.Page as Shell;
+                if (shell == null) return;
+
+                // Refresh current page
+                if (shell.CurrentPage is MainPage mainPage)
+                {
+                    RefreshMainPageCollection(mainPage);
+                }
+                else if (shell.CurrentPage is JournalPage journalPage)
+                {
+                    RefreshJournalPageCollection(journalPage);
+                }
+
+                // Also refresh pages in navigation stack
+                foreach (var page in shell.Navigation.NavigationStack)
+                {
+                    if (page is MainPage mainPageInStack)
+                    {
+                        RefreshMainPageCollection(mainPageInStack);
+                    }
+                    else if (page is JournalPage journalPageInStack)
+                    {
+                        RefreshJournalPageCollection(journalPageInStack);
+                    }
+                }
+            });
+        });
+    }
+
+    private void RefreshMainPageCollection(MainPage? page)
+    {
+        if (page == null) return;
+
+        var collection = page.FindByName<CollectionView>("FoodCollection");
+        if (collection != null && collection.ItemsSource != null)
+        {
+            // Force CollectionView to reload items by resetting ItemsSource
+            var temp = collection.ItemsSource;
+            collection.ItemsSource = null;
+            collection.ItemsSource = temp;
+        }
+    }
+
+    private void RefreshJournalPageCollection(JournalPage? page)
+    {
+        if (page == null) return;
+
+        var collection = page.FindByName<CollectionView>("JournalCollection");
+        if (collection != null && collection.ItemsSource != null)
+        {
+            // Force CollectionView to reload items by resetting ItemsSource
+            var temp = collection.ItemsSource;
+            collection.ItemsSource = null;
+            collection.ItemsSource = temp;
+        }
     }
 }

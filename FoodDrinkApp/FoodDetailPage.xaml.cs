@@ -32,9 +32,24 @@ public partial class FoodDetailPage : ContentPage
 
     private async Task LoadItemAsync(string id)
     {
-        currentItem = await FoodCatalogService.GetByIdAsync(id);
-        BindingContext = currentItem;
-        RenderItem();
+        try
+        {
+            currentItem = await FoodCatalogService.GetByIdAsync(id);
+
+            if (currentItem == null)
+            {
+                await DisplayAlert("Error", "Food item not found. It may have been deleted.", "OK");
+                await Shell.Current.GoToAsync("..");
+                return;
+            }
+
+            RenderItem();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Failed to load item: {ex.Message}", "OK");
+            await Shell.Current.GoToAsync("..");
+        }
     }
 
     private void RenderItem()
@@ -42,7 +57,11 @@ public partial class FoodDetailPage : ContentPage
         if (currentItem is null)
         {
             NameLabel.Text = "Record not found";
+            CategoryLabel.Text = "";
+            CaloriesLabel.Text = "";
+            MacroLabel.Text = "";
             DescriptionLabel.Text = "The selected food or drink could not be loaded.";
+            AllergyLabel.Text = "";
             return;
         }
 
@@ -95,7 +114,11 @@ public partial class FoodDetailPage : ContentPage
 
     private async void OnEditClicked(object? sender, EventArgs e)
     {
-        if (currentItem == null) return;
+        if (currentItem == null)
+        {
+            await DisplayAlert("Error", "No item to edit", "OK");
+            return;
+        }
 
         var parameters = new Dictionary<string, object>
         {

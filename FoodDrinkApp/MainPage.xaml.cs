@@ -14,7 +14,13 @@ public partial class MainPage : ContentPage
     {
         base.OnAppearing();
         ApplyFontScale();
-        await LoadFoodItemsAsync(SearchFoodBar.Text);
+
+        // Reload data from cache each time page appears
+        var data = await FoodCatalogService.SearchAsync(SearchFoodBar.Text);
+        FoodCollection.ItemsSource = data;
+
+        await Task.Delay(50);
+        ApplyFontScale();
     }
 
     private void ApplyFontScale()

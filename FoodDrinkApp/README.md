@@ -1,58 +1,203 @@
-# 食光营养助手
+# NutriBite - Food & Drink Tracking App
 
-食光营养助手是一个基于 .NET MAUI 的“食品与饮品”课程项目应用。应用可以记录食品和饮品，展示营养摘要，验证用户输入，并演示移动设备硬件功能。
+A cross-platform mobile application developed with .NET MAUI for the "Food and Drink" themed coursework assignment. NutriBite helps users track food nutrition, maintain a meal journal, and demonstrates various mobile hardware capabilities.
 
-## 主要功能
+## Repository
 
-- 食品和饮品列表，支持搜索和详情页。
-- 添加记录表单，检查必填项和营养数值。
-- 使用相机拍摄食品照片并预览。
-- 使用定位记录用餐或购买地点。
-- 使用文字转语音朗读营养摘要和帮助内容。
-- 使用震动与触觉反馈提供操作提醒。
-- 支持主题切换和大字体模式。
-- 包含语义标签、屏幕阅读器播报和清晰的验证提示。
+**GitHub Repository:** https://github.com/HubuManchester/fooddrink-Wusihan0726/
 
-## 评分点覆盖
+**Student Name:** Sihan Wu
 
-- UI/UX 与无障碍：XAML 页面、底部导航、一致的视觉风格、深色模式、语义描述和屏幕阅读器播报。
-- 移动硬件：相机、定位、文字转语音、震动和触觉反馈。
-- 功能完整性：列表、搜索、添加、详情、设置和硬件演示流程。
-- 验证与错误处理：必填项检查、数字检查、权限错误和硬件不可用提示。
-- 代码质量：模型和服务分离、命名清晰、可复用的目录服务，以及范围清晰的页面代码。
-- 部署：面向 Android 和 Windows 的 .NET MAUI 跨平台应用。
-- GitHub 使用：建议持续提交，例如 `添加食品列表`、`实现硬件页面`、`添加输入验证`。
+**Student ID:** 21906375
 
-## 运行方式
+## Table of Contents
 
-使用安装了 .NET MAUI 工作负载的 Visual Studio 2022 打开 `FoodDrinkApp.csproj` 或 `FoodDrinkApp.sln`。
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Assessment Criteria Coverage](#assessment-criteria-coverage)
+- [Project Structure](#project-structure)
+- [Hardware Features Implemented](#hardware-features-implemented)
+- [Accessibility Features](#accessibility-features)
+- [API Configuration](#api-configuration)
+- [Build and Run](#build-and-run)
+- [Screencast Checklist](#screencast-checklist)
+- [GitHub Usage](#github-usage)
+- [Technologies Used](#technologies-used)
 
-推荐演示目标：
+## Project Overview
 
-- Android 模拟器
-- Windows Machine
+| Property | Value |
+|----------|-------|
+| Application Name | NutriBite |
+| Theme | Food and Drink |
+| Framework | .NET MAUI |
+| Target Platforms | Android, Windows, iOS, MacCatalyst |
+| Minimum Android Version | API 21 (Android 5.0) |
+| Minimum Windows Version | 10.0.17763.0 |
 
-Windows 构建命令：
+## Features
+
+### Core Functionality
+- Food and beverage catalog with search functionality
+- Detailed nutrition information display (calories, protein, carbs, fat)
+- Add, edit, and delete food records
+- Meal journal with photo attachment
+- Location tagging for meal entries
+- Text-to-speech for nutrition summaries and journal notes
+
+### Hardware Integration
+- Camera for meal photography
+- GPS location with reverse geocoding
+- Text-to-speech synthesis
+- Vibration feedback
+- Haptic feedback
+- Accelerometer / shake detection for meal inspiration
+
+### User Experience
+- Light and dark theme support
+- Large text mode for accessibility
+- Screen reader support with semantic properties
+- Pull-to-refresh on list pages
+- Form validation with user-friendly error messages
+
+## Assessment Criteria Coverage
+
+| Criterion | Weight | Implementation Status |
+|-----------|--------|----------------------|
+| UI/UX Design and Accessibility | 30% | XAML pages, gradient backgrounds, rounded cards, theme switching, semantic properties, screen reader announcements |
+| Use of Mobile Hardware | 20% | Camera, GPS/Geocoding, Text-to-Speech, Vibration, Haptic Feedback, Accelerometer |
+| Functionality | 20% | Food catalog, search, CRUD operations, meal journal, settings |
+| Validation and Error Handling | 10% | Required field validation, numeric validation, permission handling, user-friendly error messages |
+| Code Quality | 10% | Models/Services separation, clear naming conventions, reusable services |
+| Deployment | 5% | Cross-platform support for Android and Windows |
+| GitHub Usage | 5% | Regular commits, meaningful commit messages, repository management |
+
+
+## Hardware Features Implemented
+
+| No. | Hardware | API Used | Integration Location |
+|-----|----------|----------|----------------------|
+| 1 | Camera | MediaPicker.Default.CapturePhotoAsync() | AddJournalPage, HardwarePage |
+| 2 | GPS / Location | Geolocation.Default.GetLocationAsync() | AddJournalPage, HardwarePage |
+| 3 | Geocoding | Geocoding.Default.GetPlacemarksAsync() | AddJournalPage, HardwarePage |
+| 4 | Text-to-Speech | TextToSpeech.Default.SpeakAsync() | FoodDetailPage, JournalDetailPage, AddJournalPage, HardwarePage |
+| 5 | Vibration | Vibration.Default.Vibrate() | AddItemPage, EditFoodPage, FoodDetailPage, HardwarePage |
+| 6 | Haptic Feedback | HapticFeedback.Default.Perform() | JournalDetailPage, AddJournalPage, HardwarePage |
+| 7 | Accelerometer / Shake | Accelerometer.Default | AddJournalPage (shake for meal inspiration), HardwarePage |
+
+## Accessibility Features
+
+### WCAG Principles Addressed
+
+| Principle | Implementation |
+|-----------|----------------|
+| Perceivable (1.4.3 Contrast) | Sufficient contrast ratio between text and background in both light and dark themes |
+| Perceivable (1.4.4 Resize Text) | Large text mode scales all UI text by 1.22x |
+| Operable (2.5.5 Target Size) | Buttons have minimum height/width of 44 density-independent pixels |
+| Understandable (3.3.1 Error Identification) | Clear error messages with visual and haptic feedback |
+| Robust (4.1.2 Name, Role, Value) | SemanticProperties for all interactive elements |
+
+### Semantic Properties Used
+
+```csharp
+// Headings
+SemanticProperties.SetHeadingLevel(label, SemanticHeadingLevel.Level1);
+
+// Hints for screen readers
+SemanticProperties.SetHint(button, "Save this journal entry");
+
+// Active announcements
+SemanticScreenReader.Announce("Journal entry saved");
+```
+
+### Large Text Mode
+
+The AccessibilityService dynamically scales font sizes across all pages:
+- Labels, Buttons, Entries, Editors, Pickers, SearchBars are all supported
+- Original font sizes are cached and restored when large text mode is disabled
+- Scales text by 1.22x when enabled
+
+## API Configuration
+
+The application uses mockapi.io as a backend for food catalog data.
+
+**API Endpoint:** https://69ef02b69163f839f8934560.mockapi.io/foods
+
+Configuration file: `Services/MockApiConfig.cs`
+
+```csharp
+public static class MockApiConfig
+{
+    public const string EndpointUrl = "https://69ef02b69163f839f8934560.mockapi.io/foods";
+    public static bool IsConfigured => !string.IsNullOrWhiteSpace(EndpointUrl);
+}
+```
+
+If the API is not available, the app falls back to local sample data.
+
+## Build and Run
+
+### Prerequisites
+
+- Visual Studio 2022 with .NET MAUI workload
+- .NET 9 SDK
+- Android SDK (for Android deployment)
+- Windows 10 version 19041 or later (for Windows deployment)
+
+### Build Commands
 
 ```powershell
+# Build for Windows
 dotnet build .\FoodDrinkApp.csproj -f net9.0-windows10.0.19041.0
-```
 
-Android 构建命令：
-
-```powershell
+# Build for Android
 dotnet build .\FoodDrinkApp.csproj -f net9.0-android
+
+# Run on Android emulator or device
+dotnet build .\FoodDrinkApp.csproj -f net9.0-android -t:Run
 ```
 
-本项目通过 `Directory.Build.props` 将构建输出放到 `C:\MauiBuild\NutriTrack\`，用于规避 Android 打包工具在中文路径下的 `assets` 路径问题。
+### Android Permissions
 
-## 录屏演示清单
+The following permissions are declared in `Platforms/Android/AndroidManifest.xml`:
 
-- 说明“食品与饮品”主题和“食光营养助手”的应用概念。
-- 展示搜索、详情页和添加新记录。
-- 演示不填必填项、输入非法数字时的验证提示。
-- 演示相机、定位、文字转语音、震动和触觉反馈。
-- 展示深色模式和大字体模式。
-- 展示关键代码文件：模型、服务、页面和 Android 权限配置。
-- 展示 Android 和 Windows 部署效果。
-- 展示 GitHub 提交历史和 README。
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.VIBRATE" />
+
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+<uses-feature android:name="android.hardware.location.gps" android:required="false" />
+<uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
+
+## Technologies Used
+
+- .NET MAUI - Cross-platform UI framework
+- XAML - Declarative UI markup
+- C# 12 - Primary programming language
+- Microsoft.Maui.Controls - UI controls
+- Microsoft.Extensions.Logging - Debug logging
+- MediaPicker - Camera integration
+- Geolocation - GPS positioning
+- Geocoding - Reverse address lookup
+- TextToSpeech - Voice synthesis
+- Vibration - Haptic feedback
+- HapticFeedback - Touch response
+- Accelerometer - Motion detection
+
+## Submission Information
+
+| Item | Details |
+|------|---------|
+| Course | Developing a Cross-Platform Mobile App |
+| Assignment | 6G6Z0014_1CWK100 |
+| Submission Date | June 3, 2026 |
+| Submission Method | GitHub repository + Screencast on Xuexitong |
+
+## Author
+
+**Sihan Wu**
+
+Student ID: 21906375
+
+GitHub: https://github.com/HubuManchester/fooddrink-Wusihan0726/

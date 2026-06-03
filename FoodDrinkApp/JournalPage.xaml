@@ -89,31 +89,31 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
-                            <VerticalStackLayout Padding="16" Spacing="8">
+                            <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="6" ColumnSpacing="10">
                                 <!-- Title Row -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                                    <Label Text="{Binding DisplayTitle}"
-                                           FontSize="18"
+                                <Label Grid.Row="0" Grid.Column="0"
+                                       Text="{Binding DisplayTitle}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
+                                       LineBreakMode="TailTruncation"
+                                       SemanticProperties.HeadingLevel="Level2" />
+                                <Border Grid.Row="0" Grid.Column="1"
+                                        StrokeThickness="0"
+                                        BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
+                                        Padding="8,4">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding MealType}"
+                                           FontSize="12"
                                            FontAttributes="Bold"
-                                           TextColor="{AppThemeBinding Light=#3A2518, Dark=#FFFFFF}"
-                                           LineBreakMode="TailTruncation"
-                                           SemanticProperties.HeadingLevel="Level2" />
-                                    <Border Grid.Column="1"
-                                            StrokeThickness="0"
-                                            BackgroundColor="{AppThemeBinding Light=#FDE8E8, Dark=#3A2A2A}"
-                                            Padding="8,4">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="8" />
-                                        </Border.StrokeShape>
-                                        <Label Text="{Binding MealType}"
-                                               FontSize="12"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource Secondary}" />
-                                    </Border>
-                                </Grid>
+                                           TextColor="{StaticResource Secondary}" />
+                                </Border>
 
                                 <!-- Location Row - only show if has value -->
-                                <Label Text="{Binding LocationAddress}"
+                                <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                       Text="{Binding LocationAddress}"
                                        FontSize="13"
                                        TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
                                        IsVisible="{Binding LocationAddress, Converter={StaticResource StringNotNullOrEmptyConverter}}"
@@ -121,7 +121,8 @@
                                        MaxLines="1" />
 
                                 <!-- Notes Row - only show if has value -->
-                                <Label Text="{Binding Notes}"
+                                <Label Grid.Row="2" Grid.ColumnSpan="2"
+                                       Text="{Binding Notes}"
                                        FontSize="13"
                                        TextColor="{AppThemeBinding Light=#8A7A6A, Dark=#B0B0B0}"
                                        IsVisible="{Binding Notes, Converter={StaticResource StringNotNullOrEmptyConverter}}"
@@ -129,7 +130,7 @@
                                        MaxLines="2" />
 
                                 <!-- Action Row -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,4,0,0">
+                                <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" Margin="0,4,0,0">
                                     <Label Text="Has photo"
                                            FontSize="12"
                                            TextColor="{StaticResource Primary}"
@@ -151,7 +152,7 @@
                                             Clicked="OnViewClicked"
                                             SemanticProperties.Hint="View journal entry details" />
                                 </Grid>
-                            </VerticalStackLayout>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

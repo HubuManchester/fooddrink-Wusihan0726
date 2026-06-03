@@ -20,6 +20,7 @@ public static class FoodCatalogService
     [
         new()
         {
+            Id = "fallback_1",
             Name = "Berry Yogurt Bowl",
             Category = "Breakfast",
             Description = "Greek yogurt with mixed berries, oats, and a small drizzle of honey.",
@@ -32,6 +33,7 @@ public static class FoodCatalogService
         },
         new()
         {
+            Id = "fallback_2",
             Name = "Chicken Brown Rice Box",
             Category = "Lunch",
             Description = "Grilled chicken breast with brown rice, spinach, cucumber, and lemon dressing.",
@@ -44,6 +46,7 @@ public static class FoodCatalogService
         },
         new()
         {
+            Id = "fallback_3",
             Name = "Iced Matcha Latte",
             Category = "Drink",
             Description = "Matcha, milk, and ice. A lower-sugar version is recommended.",
@@ -56,6 +59,7 @@ public static class FoodCatalogService
         },
         new()
         {
+            Id = "fallback_4",
             Name = "Tomato Wholegrain Pasta",
             Category = "Dinner",
             Description = "Wholegrain pasta with tomato sauce, basil, and roasted vegetables.",
@@ -75,12 +79,6 @@ public static class FoodCatalogService
     public static async Task<IReadOnlyList<FoodItem>> SearchAsync(string? query)
     {
         var items = await GetAllAsync();
-
-        if (items.Count == 0)
-        {
-            items = LocalFallbackItems;
-            cachedItems = new List<FoodItem>(LocalFallbackItems);
-        }
 
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -105,6 +103,14 @@ public static class FoodCatalogService
             await GetAllAsync();
         }
 
+        // First try to get from cache
+        var cachedItem = cachedItems.FirstOrDefault(item => item.Id == id);
+        if (cachedItem != null)
+        {
+            return cachedItem;
+        }
+
+        // If not in cache and API is configured, try API
         if (MockApiConfig.IsConfigured)
         {
             try
@@ -115,6 +121,11 @@ public static class FoodCatalogService
 
                 if (item is not null)
                 {
+                    // Add to cache if found
+                    if (!cachedItems.Any(i => i.Id == item.Id))
+                    {
+                        cachedItems.Add(item);
+                    }
                     return item;
                 }
             }
@@ -124,11 +135,13 @@ public static class FoodCatalogService
             }
         }
 
-        return cachedItems.FirstOrDefault(item => item.Id == id);
+        return null;
     }
 
     public static async Task<FoodItem> AddAsync(FoodItem item)
     {
+        item.Id = Guid.NewGuid().ToString("N");
+        
         if (MockApiConfig.IsConfigured)
         {
             try
@@ -149,7 +162,7 @@ public static class FoodCatalogService
             }
         }
 
-        item.Id = Guid.NewGuid().ToString("N");
+        // Add to local cache
         cachedItems.Add(item);
         return item;
     }
@@ -255,5 +268,11 @@ public static class FoodCatalogService
             cachedItems = new List<FoodItem>(LocalFallbackItems);
         }
         return cachedItems;
+    }
+
+    public static void ResetToLocalData()
+    {
+        cachedItems = new List<FoodItem>(LocalFallbackItems);
+        LastLoadUsedMockApi = false;
     }
 }

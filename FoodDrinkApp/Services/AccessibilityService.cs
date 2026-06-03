@@ -32,6 +32,9 @@ public static class AccessibilityService
         if (currentPage != null)
         {
             ApplyFontScale(currentPage);
+
+            // Force CollectionView layout refresh
+            ForceRefreshCollectionViews();
         }
     }
 
@@ -273,6 +276,38 @@ public static class AccessibilityService
         {
             ResetElementFont(element);
         }
+    }
+
+    private static void ForceRefreshCollectionViews()
+    {
+        Task.Delay(150).ContinueWith(_ =>
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var shell = Application.Current?.Windows?.FirstOrDefault()?.Page as Shell;
+                if (shell?.CurrentPage == null) return;
+
+                void RefreshCollectionView(string name, ContentPage page)
+                {
+                    var collection = page.FindByName<CollectionView>(name);
+                    if (collection?.ItemsSource != null)
+                    {
+                        var temp = collection.ItemsSource;
+                        collection.ItemsSource = null;
+                        collection.ItemsSource = temp;
+                    }
+                }
+
+                if (shell.CurrentPage is MainPage mainPage)
+                {
+                    RefreshCollectionView("FoodCollection", mainPage);
+                }
+                else if (shell.CurrentPage is JournalPage journalPage)
+                {
+                    RefreshCollectionView("JournalCollection", journalPage);
+                }
+            });
+        });
     }
 
     private sealed class FontSizeStore
